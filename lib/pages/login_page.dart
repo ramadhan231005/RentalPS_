@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'signup_page.dart';
+import 'user_home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -32,9 +33,14 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    // You can add your login logic here
+    // Simple login logic: if fields are filled, navigate to user home
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Login dengan email: $email')),
+    );
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const UserHomePage()),
     );
   }
 

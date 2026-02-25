@@ -1,9 +1,42 @@
 import 'package:flutter/material.dart';
+import 'rental_detail_page.dart';
+import 'rental_history_page.dart';
+import '../models/rental_booking.dart';
 
-class UserHomePage extends StatelessWidget {
+class UserHomePage extends StatefulWidget {
   const UserHomePage({Key? key}) : super(key: key);
 
   static const Color accentOrange = Color(0xFFE8822A);
+
+  @override
+  State<UserHomePage> createState() => _UserHomePageState();
+}
+
+class _UserHomePageState extends State<UserHomePage> {
+  final List<RentalBooking> _bookings = [];
+
+  void _addBooking(RentalBooking booking) {
+    setState(() => _bookings.add(booking));
+  }
+
+  void _openDetail(BuildContext context, {required String title, required String location, required String imageUrl, required String available, required String price}) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RentalDetailPage(
+          title: title,
+          location: location,
+          imageUrl: imageUrl,
+          available: available,
+          price: price,
+          onBook: (String t, String l, String img, String p) {
+            _addBooking(RentalBooking(title: t, location: l, imageUrl: img, price: p));
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Berhasil ditambahkan ke riwayat sewa')));
+          },
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +69,7 @@ class UserHomePage extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: accentOrange,
+                      backgroundColor: UserHomePage.accentOrange,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -54,22 +87,32 @@ class UserHomePage extends StatelessWidget {
                   crossAxisSpacing: 18,
                   mainAxisSpacing: 18,
                   childAspectRatio: 0.66,
-                  children: const [
+                  children: [
                     RentalCard(
                       title: "Gamer's Paradise",
                       location: 'Jakarta Selatan',
-                      imageUrl:
-                          'https://picsum.photos/id/1018/600/400',
+                      imageUrl: 'https://picsum.photos/id/1018/600/400',
                       available: '5/10',
                       price: 'Rp15.000',
+                      onView: () => _openDetail(context,
+                          title: "Gamer's Paradise",
+                          location: 'Jakarta Selatan',
+                          imageUrl: 'https://picsum.photos/id/1018/600/400',
+                          available: '5/10',
+                          price: 'Rp15.000'),
                     ),
                     RentalCard(
                       title: 'PS Hub Bandung',
                       location: 'Bandung',
-                      imageUrl:
-                          'https://picsum.photos/id/1015/600/400',
+                      imageUrl: 'https://picsum.photos/id/1015/600/400',
                       available: '2/5',
                       price: 'Rp12.000',
+                      onView: () => _openDetail(context,
+                          title: 'PS Hub Bandung',
+                          location: 'Bandung',
+                          imageUrl: 'https://picsum.photos/id/1015/600/400',
+                          available: '2/5',
+                          price: 'Rp12.000'),
                     ),
                   ],
                 ),
@@ -119,15 +162,21 @@ class UserHomePage extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.history),
             title: const Text('Riwayat Sewa'),
-            onTap: () {},
+            trailing: _bookings.isNotEmpty ? CircleAvatar(radius: 12, backgroundColor: UserHomePage.accentOrange, child: Text('${_bookings.length}', style: const TextStyle(fontSize: 12, color: Colors.white))) : null,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => RentalHistoryPage(bookings: _bookings)),
+              );
+            },
           ),
           ListTile(
             leading: const Icon(Icons.message_outlined),
             title: Row(
-              children: const [
-                Text('Pesan'),
-                SizedBox(width: 8),
-                CircleAvatar(radius: 9, backgroundColor: accentOrange, child: Text('1', style: TextStyle(fontSize: 11, color: Colors.white))),
+              children: [
+                const Text('Pesan'),
+                const SizedBox(width: 8),
+                CircleAvatar(radius: 9, backgroundColor: UserHomePage.accentOrange, child: const Text('1', style: TextStyle(fontSize: 11, color: Colors.white))),
               ],
             ),
             onTap: () {},
@@ -151,6 +200,7 @@ class RentalCard extends StatelessWidget {
   final String imageUrl;
   final String available;
   final String price;
+  final VoidCallback? onView;
 
   const RentalCard({
     Key? key,
@@ -159,6 +209,7 @@ class RentalCard extends StatelessWidget {
     required this.imageUrl,
     required this.available,
     required this.price,
+    this.onView,
   }) : super(key: key);
 
   @override
@@ -212,7 +263,7 @@ class RentalCard extends StatelessWidget {
                   height: 42,
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: onView,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: UserHomePage.accentOrange,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -228,3 +279,4 @@ class RentalCard extends StatelessWidget {
     );
   }
 }
+ 

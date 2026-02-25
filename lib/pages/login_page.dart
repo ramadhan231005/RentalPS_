@@ -82,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
               const Text(
                 'Masuk',
                 style: TextStyle(
-                  fontSize: 32,
+                  fontSize: 32, 
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF2C3E50),
                 ),
